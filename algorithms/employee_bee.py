@@ -12,12 +12,8 @@ class EmployedBee:
         self.modification_rate = modification_rate
         self.k = k
 
-        knn = KNeighborsClassifier(n_neighbors=k)
         selected_features = [f for i, f in enumerate(
             self.features) if self.current_food_source[i] == 1]
-        # knn.fit(self.dataset[selected_features].to_numpy(), self.labels.to_numpy())
-        # self.current_fitness = knn.score(self.test_data[selected_features].to_numpy(), self.test_labels.to_numpy())
-        # self.y_pred = knn.predict(self.test_data[selected_features].to_numpy())
 
         self.y_pred = get_mknn_predicted(self.dataset[selected_features].to_numpy(), self.labels.to_numpy(
         ), self.test_data[selected_features].to_numpy(), self.test_labels.to_numpy(), k)
@@ -30,14 +26,12 @@ class EmployedBee:
                     for bit in self.current_food_source]
         selected_features = [f for i, f in enumerate(
             self.features) if neighbor[i] == 1]
-        # knn.fit(self.dataset[selected_features].to_numpy(), self.labels.to_numpy())
 
-        predicted = get_mknn_predicted(self.dataset[selected_features].to_numpy(), self.labels.to_numpy(
-        ), self.test_data[selected_features].to_numpy(), self.test_labels.to_numpy(), self.k)
-        neighbor_fitness = accuracy_score(
-            self.test_labels.to_numpy(), predicted)
-        # neighbor_fitness = knn.score(self.test_data[selected_features].to_numpy(), self.test_labels.to_numpy())
-        # self.y_pred = knn.predict(self.test_data[selected_features].to_numpy())
+        # TODO
+        # predicted = get_mknn_predicted(self.dataset[selected_features].to_numpy(), self.labels.to_numpy(
+        # ), self.test_data[selected_features].to_numpy(), self.test_labels.to_numpy(), self.k)
+        # neighbor_fitness = accuracy_score(
+        #     self.test_labels.to_numpy(), predicted)
 
         self.y_pred = predicted
         if neighbor_fitness > self.current_fitness:

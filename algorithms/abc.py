@@ -1,3 +1,5 @@
+import numpy as np
+
 class ArtificialBeeColony:
 
     def __init__(self, features, data, test_data, modification_rate, k=3):
