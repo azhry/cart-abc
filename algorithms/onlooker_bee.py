@@ -1,10 +1,12 @@
+import numpy as np
+import random
+
 class OnlookerBee:
 
     def __init__(self, employed_bees):
         self.employed_bees = employed_bees
         self.bees_distribution = np.array([])
-        self.food_source_size = len(
-            self.employed_bees[0].get_current_food_source())
+        self.food_source_size = len(self.employed_bees[0].get_current_food_source())
         self.best_fitness = 0
         self.best_food_source = np.array([])
         self.best_employed_bee = None
@@ -38,8 +40,7 @@ class OnlookerBee:
             total_fitness += fitness
 
         for bee in self.employed_bees:
-            freq = int((bee.get_current_fitness() /
-                        total_fitness) * num_of_bees)
+            freq = int((bee.get_current_fitness() / total_fitness) * num_of_bees)
             for i in range(freq):
                 self.bees_distribution = np.append(self.bees_distribution, bee)
 

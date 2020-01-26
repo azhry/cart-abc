@@ -1,16 +1,17 @@
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve, auc, classification_report
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.preprocessing import label_binarize
 from helpers.data_loader import load, get_features_labels
 from helpers.plots import roc_curves_plot
+from algorithms.abc import ArtificialBeeColony
 from scipy import interp
 from itertools import cycle
 import numpy as np
 import matplotlib.pyplot as plt
 
 def run_cart(path, test_size):
-    df = load('data/german.txt')
+    df = load(path)
     features, labels = get_features_labels(df)
     X_train, X_test, y_train, y_test = get_train_test_data(features, labels, test_size)
     y_test_binarized = class_binarize(y_test, [1, 2])
@@ -22,6 +23,29 @@ def run_cart(path, test_size):
     y_pred_binarized = class_binarize(test_cart(clf, X_test), [1, 2])
     roc_auc_values, fpr, tpr = roc_auc(n_classes, y_test_binarized, y_pred_binarized)
     roc_curves_plot(roc_auc_values, fpr, tpr, n_classes)
+
+def run_cart_abc(path, test_size):
+    df = load(path)
+    features, labels = get_features_labels(df)
+    X_train, X_test, y_train, y_test = get_train_test_data(features, labels, test_size)
+    y_test_binarized = class_binarize(y_test, [1, 2])
+
+    clf = DecisionTreeClassifier()
+    clf = train_cart(clf, X_train, y_train)
+
+    n_classes = y_test_binarized.shape[1]
+    y_pred = test_cart(clf, X_test)
+    y_pred_binarized = class_binarize(y_pred, [1, 2])
+    score = get_score(clf, X_test, y_test)
+
+    print(reports(y_test, y_pred))
+
+    modification_rate = 0.3
+    cycle = 10
+    abc = ArtificialBeeColony(clf, X_train.columns, X_train, X_test, modification_rate)
+    accuracy, selected_features, bee, _ = abc.execute(X_train, y_train, X_test, y_test, cycle, score)
+
+    print(reports(y_test, bee.get_y_pred()))
 
 def run_cart_kfold(path, n_splits):
     df = load(path)
@@ -81,9 +105,6 @@ def get_score(clf, x_test, y_true):
 def class_binarize(y, classes):
     return label_binarize(y, classes = classes)
 
-def abc():
-    pass
-
 def roc_auc(n_classes, y_test, y_score):
     fpr = dict() # false positive rate
     tpr = dict() # true positive rate
@@ -96,5 +117,5 @@ def roc_auc(n_classes, y_test, y_score):
     roc_auc['micro'] = auc(fpr['micro'], tpr['micro'])
     return roc_auc, fpr, tpr
 
-def reports():
-    pass
+def reports(y_true, y_pred):
+    return classification_report(y_true, y_pred)
