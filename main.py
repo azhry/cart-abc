@@ -1,11 +1,25 @@
-from sklearn.tree import DecisionTreeClassifier
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-models', '-m')
+parser.add_argument('-validation', '-v')
+parser.add_argument('-test-size', '-s')
+parser.add_argument('-n-splits', '-n')
+parser.add_argument('-file', '-f')
 
-from helpers.data_loader import load, get_features_labels
-from helpers.models import train_cart, test_cart, get_score
+args = parser.parse_args()
+models = args.models
+validation = args.validation
+file = args.file
+test_size = args.test_size
+n_splits = int(args.n_splits)
 
-df = load('data/german.txt')
-features, labels = get_features_labels(df)
+# python main.py -models cart -validation split -file german.txt
+# python main.py -m cart -v split -f german.txt -s 0.3
 
-clf = DecisionTreeClassifier()
-clf = train_cart(clf, features, labels)
-print(get_score(clf, features, labels))
+from helpers.models import run_cart, run_cart_kfold
+
+if models == 'cart':
+    if validation == 'split':
+        run_cart(f'data/{file}', test_size)
+    elif validation == 'cross':
+        run_cart_kfold(f'data/{file}', n_splits)

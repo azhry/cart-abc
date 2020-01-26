@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from itertools import cycle
-from scipy import interpolate
+from scipy import interp
 from sklearn.metrics import auc
 
 # https://stackoverflow.com/questions/30483246/how-to-check-if-a-python-module-has-been-imported
@@ -25,7 +25,7 @@ def roc_curves_plot(roc_auc, fpr, tpr, n_classes):
     # interpolate all roc curves
     mean_tpr = np.zeros_like(all_fpr)
     for i in range(n_classes):
-        mean_tpr += interpolate(all_fpr, fpr[i], tpr[i])
+        mean_tpr += interp(all_fpr, fpr[i], tpr[i])
 
     # average it and compute auc
     mean_tpr /= n_classes
@@ -50,7 +50,7 @@ def roc_curves_plot(roc_auc, fpr, tpr, n_classes):
     colors = cycle(['aqua', 'darkorange', 'cornflowerblue'])
     for i, color in zip(range(n_classes), colors):
         plt.plot(fpr[i], tpr[i], color=color, lw=lw,
-                label='ROC curve of class {0} (area = {1:0.2f})'
+                label='ROC curve (area = {1:0.2f})'
                 ''.format(i, roc_auc[i]))
 
     plt.plot([0, 1], [0, 1], 'k--', lw=lw)
